@@ -22,7 +22,7 @@ client.on('connect', function () {
   client.subscribe('pskr/rx/2E0KGG', function (err) {
   //client.subscribe('pskr/firehose', function (err) {
     if (err) {
-      console.log(err)
+      alert(err)
       return
     } else {
       console.log("Subscribed!")
