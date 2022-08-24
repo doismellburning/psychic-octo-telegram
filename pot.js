@@ -10,7 +10,7 @@ const options = {
   //password: 'emqx_test',
 }
 
-const HOST = "ws://mqtt.pskreporter.info:81"
+const HOST = "wss://mqtt.pskreporter.info:1886"
 
 const client  = mqtt.connect(HOST, options)
 
