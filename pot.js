@@ -32,7 +32,7 @@ client.on('connect', function () {
 		var when = new Date(message['flowStartSeconds'] * 1000)
         var entry = document.createElement("div")
         entry.innerHTML = `${when.toISOString()} : ${message['band']} - ${message['senderCallsign']} @ ${message['senderLocator']} (${message['senderCountryName']})`
-        outputLog.appendChild(entry)
+        outputLog.insertBefore(entry, outputLog.firstChild)
       })
     }
   })
