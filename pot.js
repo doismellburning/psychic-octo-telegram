@@ -14,10 +14,7 @@ const HOST = "ws://mqtt.pskreporter.info:81"
 
 const client  = mqtt.connect(HOST, options)
 
-const outputLogId = "outputLog"
-const outputLog = document.createElement("div")
-outputLog.id = outputLogId
-document.body.appendChild(outputLog)
+const outputLog = document.getElementById("outputLog")
 
 client.on('connect', function () {
   console.log('Connected')
