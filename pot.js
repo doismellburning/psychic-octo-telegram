@@ -29,8 +29,9 @@ client.on('connect', function () {
       client.on('message', function(topic, payload, packet) {
         console.log(`Topic: ${topic}, Message: ${payload.toString()}, Packet: ${packet}`)
 		var message = JSON.parse(payload.toString())
+		var when = new Date(message['flowStartSeconds'] * 1000)
         var entry = document.createElement("div")
-        entry.innerHTML = `${message['senderCallsign']} @ ${message['senderLocator']} (${message['senderCountryName']})`
+        entry.innerHTML = `${when.toISOString()} : ${message['band']} - ${message['senderCallsign']} @ ${message['senderLocator']} (${message['senderCountryName']})`
         outputLog.appendChild(entry)
       })
     }
