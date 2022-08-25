@@ -42,10 +42,33 @@ function updateFeedOnMessage(client) {
 	})
 }
 
-function addEntry(message, target) {
+function updateLastOnMessage(client) {
+	client.on('message', function(topic, payload, packet) {
+		var message = JSON.parse(payload.toString())
+		console.log(`Message! ${message['senderCallsign']}`)
+		console.log(`Payload! ${payload.toString()}`)
+
+		var entry = makeEntry(message)
+		if (topic.startsWith("pskr/tx")) {
+			document.getElementById("lastTX").replaceChildren(entry)
+		} else if (topic.startsWith("pskr/rx")) {
+			document.getElementById("lastRX").replaceChildren(entry)
+		} else {
+			console.log(`Wat do? Topic is ${topic}`)
+		}
+	})
+}
+
+function makeEntry(message) {
 	var when = new Date(message['flowStartSeconds'] * 1000)
 	var entry = document.createElement("div")
 	entry.innerHTML = `${when.toISOString()} : ${message['band']} - ${message['senderCallsign']} @ ${message['senderLocator']} (${message['senderCountryName']})`
+
+	return entry
+}
+
+function addEntry(message, target) {
+	var entry = makeEntry(message)
 
 	target.insertBefore(entry, target.firstChild)
 }
