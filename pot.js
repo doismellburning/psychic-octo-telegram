@@ -14,8 +14,6 @@ const HOST = "wss://mqtt.pskreporter.info:1886"
 
 const client  = mqtt.connect(HOST, options)
 
-const outputLog = document.getElementById("outputLog")
-
 client.on('connect', function () {
   console.log('Connected')
 
@@ -27,13 +25,19 @@ client.on('connect', function () {
     } else {
       console.log("Subscribed!")
       client.on('message', function(topic, payload, packet) {
-        console.log(`Topic: ${topic}, Message: ${payload.toString()}, Packet: ${packet}`)
 		var message = JSON.parse(payload.toString())
-		var when = new Date(message['flowStartSeconds'] * 1000)
-        var entry = document.createElement("div")
-        entry.innerHTML = `${when.toISOString()} : ${message['band']} - ${message['senderCallsign']} @ ${message['senderLocator']} (${message['senderCountryName']})`
-        outputLog.insertBefore(entry, outputLog.firstChild)
+		console.log(`Message! ${message['senderCallsign']}`)
+		console.log(`Payload! ${payload.toString()}`)
+		addEntry(message, document.getElementById("rxFeed"))
       })
     }
   })
 })
+
+function addEntry(message, target) {
+	var when = new Date(message['flowStartSeconds'] * 1000)
+	var entry = document.createElement("div")
+	entry.innerHTML = `${when.toISOString()} : ${message['band']} - ${message['senderCallsign']} @ ${message['senderLocator']} (${message['senderCountryName']})`
+
+	target.insertBefore(entry, target.firstChild)
+}
