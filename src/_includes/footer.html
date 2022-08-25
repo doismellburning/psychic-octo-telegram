@@ -1,0 +1,38 @@
+<footer class="site-footer h-card">
+  <data class="u-url" href="{{ "/" | relative_url }}"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">{{ site.title | escape }}</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">
+            {%- if site.author -%}
+              {{ site.author | escape }}
+            {%- else -%}
+              {{ site.title | escape }}
+            {%- endif -%}
+            </li>
+            {%- if site.email -%}
+            <li><a class="u-email" href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+            {%- endif -%}
+			<li><a href="https://github.com/doismellburning/psychic-octo-telegram">GitHub</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        {%- include social.html -%}
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>{{- site.description | escape -}}</p>
+		<p>By <a href="https://www.doismellburning.co.uk/">Kristian Glass</a> - <a href="https://radio.doismellburning.co.uk/">2E0KGG</a></p>
+		<p>With thanks to <a href="https://m0lte.uk/">Tom M0LTE</a> for the <a href="https://pskreporter.info/">PSK Reporter</a> MQTT feed</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
