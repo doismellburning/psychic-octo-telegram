@@ -18,9 +18,9 @@ if (!callsign) {
 	callsign = "2E0KGG"
 }
 
-var client = connectAndSubscribe(callsign)
+var client = connectAndSubscribeAndDoStuff(callsign, updateFeedOnMessage)
 
-function connectAndSubscribe(callsign) {
+function connectAndSubscribeAndDoStuff(callsign, doStuff) {
 	const client = mqtt.connect(HOST, options)
 
 	client.on('connect', function () {
@@ -29,6 +29,12 @@ function connectAndSubscribe(callsign) {
 		client.subscribe(`pskr/tx/${callsign}`)
 	})
 
+	doStuff(client)
+
+	return client
+}
+
+function updateFeedOnMessage(client) {
 	client.on('message', function(topic, payload, packet) {
 		var message = JSON.parse(payload.toString())
 		console.log(`Message! ${message['senderCallsign']}`)
@@ -42,8 +48,6 @@ function connectAndSubscribe(callsign) {
 			console.log(`Wat do? Topic is ${topic}`)
 		}
 	})
-
-	return client
 }
 
 function addEntry(message, target) {
