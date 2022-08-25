@@ -12,35 +12,33 @@ const options = {
 
 const HOST = "wss://mqtt.pskreporter.info:1886"
 
-const client  = mqtt.connect(HOST, options)
+var client = connectAndSubscribe("2E0KGG")
+//var client = connectAndSubscribe("MM3NDH")
 
-client.on('connect', function () {
-  console.log('Connected')
+function connectAndSubscribe(callsign) {
+	const client = mqtt.connect(HOST, options)
 
-	subscribeAndDoThing("pskr/rx/2E0KGG", function(message) {
-		addEntry(message, document.getElementById("rxFeed"))
+	client.on('connect', function () {
+		console.log('Connected')
+		client.subscribe(`pskr/rx/${callsign}`)
+		client.subscribe(`pskr/tx/${callsign}`)
 	})
 
-	subscribeAndDoThing("pskr/tx/2E0KGG", function(message) {
-		addEntry(message, document.getElementById("txFeed"))
-	})
-})
-
-function subscribeAndDoThing(topic, doThingOnMessage) {
-  client.subscribe(topic, function (err) {
-    if (err) {
-      alert(err)
-      return
-    } else {
-      console.log("Subscribed!")
-      client.on('message', function(topic, payload, packet) {
+	client.on('message', function(topic, payload, packet) {
 		var message = JSON.parse(payload.toString())
 		console.log(`Message! ${message['senderCallsign']}`)
 		console.log(`Payload! ${payload.toString()}`)
-		doThingOnMessage(message)
-      })
-    }
-  })
+
+		if (topic.startsWith("pskr/tx")) {
+			addEntry(message, document.getElementById("txFeed"))
+		} else if (topic.startsWith("pskr/rx")) {
+			addEntry(message, document.getElementById("rxFeed"))
+		} else {
+			console.log(`Wat do? Topic is ${topic}`)
+		}
+	})
+
+	return client
 }
 
 function addEntry(message, target) {
