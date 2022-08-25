@@ -12,8 +12,13 @@ const options = {
 
 const HOST = "wss://mqtt.pskreporter.info:1886"
 
-var client = connectAndSubscribe("2E0KGG")
-//var client = connectAndSubscribe("MM3NDH")
+const urlParams = new URLSearchParams(window.location.search);
+var callsign = urlParams.get('callsign');
+if (!callsign) {
+	callsign = "2E0KGG"
+}
+
+var client = connectAndSubscribe(callsign)
 
 function connectAndSubscribe(callsign) {
 	const client = mqtt.connect(HOST, options)
