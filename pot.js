@@ -17,8 +17,17 @@ const client  = mqtt.connect(HOST, options)
 client.on('connect', function () {
   console.log('Connected')
 
-  client.subscribe('pskr/rx/2E0KGG', function (err) {
-  //client.subscribe('pskr/firehose', function (err) {
+	subscribeAndDoThing("pskr/rx/2E0KGG", function(message) {
+		addEntry(message, document.getElementById("rxFeed"))
+	})
+
+	subscribeAndDoThing("pskr/tx/2E0KGG", function(message) {
+		addEntry(message, document.getElementById("txFeed"))
+	})
+})
+
+function subscribeAndDoThing(topic, doThingOnMessage) {
+  client.subscribe(topic, function (err) {
     if (err) {
       alert(err)
       return
@@ -28,11 +37,11 @@ client.on('connect', function () {
 		var message = JSON.parse(payload.toString())
 		console.log(`Message! ${message['senderCallsign']}`)
 		console.log(`Payload! ${payload.toString()}`)
-		addEntry(message, document.getElementById("rxFeed"))
+		doThingOnMessage(message)
       })
     }
   })
-})
+}
 
 function addEntry(message, target) {
 	var when = new Date(message['flowStartSeconds'] * 1000)
