@@ -14,8 +14,8 @@
 		<table>
 			<tr><th>RX</th><th>TX</th>
 			<tr>
-				<td id="rxFeed"></td>
-				<td id="txFeed"></td>
+				<td id="lastRX"></td>
+				<td id="lastTX"></td>
 			</tr>
 		</table>
 
@@ -34,7 +34,7 @@
 		<script>
 			console.log(mqtt)
 		</script>
-		<script src="/pot.js"></script>
+		<script src="/js/pot.js"></script>
 		<script>
 			const urlParams = new URLSearchParams(window.location.search);
 			var callsign = urlParams.get('callsign');
@@ -42,7 +42,7 @@
 				callsign = "2E0KGG"
 			}
 
-			var client = connectAndSubscribeAndDoStuff(callsign, updateFeedOnMessage)
+			var client = connectAndSubscribeAndDoStuff(callsign, updateLastOnMessage)
 		</script>
 	</body>
 </html>
