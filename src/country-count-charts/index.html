@@ -1,0 +1,92 @@
+---
+layout: page
+title: Country Count Charts
+---
+
+<p>Counts of Countries in spots. No uniqueness or anything fancy, just "was it in the message, ok, count it".</p>
+
+<form action=".">
+        <input type="text" placeholder="Callsign" name="callsign" />
+        <input type="submit" text="Go" />
+</form>
+
+<br>
+
+<div>
+	<h2>Received</h2>
+	<canvas id="rxChart" width="400" height="400"></canvas>
+</div>
+<div>
+	<h2>Transmitted</h2>
+	<canvas id="txChart" width="400" height="400"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<script>
+	const urlParams = new URLSearchParams(window.location.search);
+	var callsign = urlParams.get('callsign');
+	if (!callsign) {
+		callsign = "2E0KGG"
+	}
+
+	var rxData = new Map()
+	var txData = new Map()
+
+	function newChart(id) {
+		const ctx = document.getElementById(id)
+		const myChart = new Chart(ctx, {
+			type: "bar",
+			data: {
+				labels: [],
+				datasets: [{
+					label: "Count",
+					data: [],
+				}]
+			}
+		})
+		return myChart
+	}
+
+	var rxChart = newChart("rxChart")
+	var txChart = newChart("txChart")
+
+	function updateChartOnMessage(client) {
+		client.on("message", function(topic, payload, packet) {
+			var message = JSON.parse(payload.toString())
+			console.log(`Message! ${message['senderCallsign']}`)
+			console.log(`Payload! ${payload.toString()}`)
+
+			if (topic.startsWith("pskr/tx")) {
+				var c = message["receiverCountryName"]
+				if (txData.has(c)) {
+					txData.set(c, txData.get(c) + 1)
+				} else {
+					txData.set(c, 1)
+				}
+				txChart.data.labels = Array.from(txData.keys())
+				txChart.data.datasets.forEach((dataset) => {
+					dataset.data = Array.from(txData.values())
+				})
+				txChart.update()
+			} else if (topic.startsWith("pskr/rx")) {
+				var c = message["senderCountryName"]
+				if (rxData.has(c)) {
+					rxData.set(c, rxData.get(c) + 1)
+				} else {
+					rxData.set(c, 1)
+				}
+				rxChart.data.labels = Array.from(rxData.keys())
+				rxChart.data.datasets.forEach((dataset) => {
+					dataset.data = Array.from(rxData.values())
+				})
+				rxChart.update()
+			} else {
+				console.log(`Wat do? Topic is ${topic}`)
+			}
+		})
+	}
+
+	var client = connectAndSubscribeAndDoStuff(callsign, updateChartOnMessage)
+	
+</script>
