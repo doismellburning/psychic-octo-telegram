@@ -35,5 +35,14 @@
 			console.log(mqtt)
 		</script>
 		<script src="/pot.js"></script>
+		<script>
+			const urlParams = new URLSearchParams(window.location.search);
+			var callsign = urlParams.get('callsign');
+			if (!callsign) {
+				callsign = "2E0KGG"
+			}
+
+			var client = connectAndSubscribeAndDoStuff(callsign, updateFeedOnMessage)
+		</script>
 	</body>
 </html>
