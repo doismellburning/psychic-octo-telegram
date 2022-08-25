@@ -5,5 +5,7 @@
 layout: page
 ---
 
-* [Feed](/feed/)
-* [Last](/last/)
+Experiments with the PSK Reporter MQTT feed at mqtt.pskreporter.info
+
+* [Spot Feed](/feed/)
+* [Last Spot](/last/)
