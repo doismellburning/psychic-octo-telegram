@@ -51,6 +51,25 @@ title: Country Count Charts
 	var rxChart = newChart("rxChart")
 	var txChart = newChart("txChart")
 
+	function stringToColour(s) {
+		// This is nasty
+		// But crypto.subtle.digest is async and we don't need anything that good
+		// https://medium.com/code-nebula/automatically-generate-chart-colors-with-chart-js-d3s-color-scales-f62e282b2b41 looks nice but that's a lot of D3
+
+		function map_range(value, low1, high1, low2, high2) {
+			return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+		}
+
+		function asciiToRGBVal(x) {
+			var y = Math.round(map_range(x, 97, 122, 1, 255)) // lower case only
+			return y
+		}
+		var d = new TextEncoder().encode(s.toLowerCase()) // Lower case for consistent ascii range
+		var colour = `rgba(${asciiToRGBVal(d[0])}, ${asciiToRGBVal(d[1])}, ${asciiToRGBVal(d[2])}, 1)`
+		console.log(colour)
+		return colour
+	}
+
 	function updateChartOnMessage(client) {
 		client.on("message", function(topic, payload, packet) {
 			var message = JSON.parse(payload.toString())
@@ -67,6 +86,9 @@ title: Country Count Charts
 				txChart.data.labels = Array.from(txData.keys())
 				txChart.data.datasets.forEach((dataset) => {
 					dataset.data = Array.from(txData.values())
+					dataset.backgroundColor = txChart.data.labels.map(function(x) {
+						return stringToColour(x)
+					})
 				})
 				txChart.update()
 			} else if (topic.startsWith("pskr/rx")) {
@@ -79,6 +101,9 @@ title: Country Count Charts
 				rxChart.data.labels = Array.from(rxData.keys())
 				rxChart.data.datasets.forEach((dataset) => {
 					dataset.data = Array.from(rxData.values())
+					dataset.backgroundColor = rxChart.data.labels.map(function(x) {
+						return stringToColour(x)
+					})
 				})
 				rxChart.update()
 			} else {
