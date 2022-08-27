@@ -14,3 +14,4 @@ A good callsign to use for exploration purposes is [MM3NDH](https://www.qrz.com/
 * [Spot Feed](/feed/)
 * [Last Spot](/last/)
 * [Heard Chart](/heard-chart/) - top 100 heard callsigns by frequency
+* [Country Count Charts](/country-count-charts/) - counts of countries in spots
