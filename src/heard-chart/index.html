@@ -1,0 +1,99 @@
+---
+layout: page
+title: Heard Chart
+---
+
+<p>Top 100 heard callsigns by frequency</p>
+
+<br>
+
+<div>
+	<canvas id="heardChart" width="400" height="400"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<script>
+	var heardData = new Map()
+
+	function newChart(id) {
+		const ctx = document.getElementById(id)
+		const myChart = new Chart(ctx, {
+			type: "bar",
+			data: {
+				labels: [],
+				datasets: [{
+					label: "Count",
+					data: [],
+				}]
+			}
+		})
+		return myChart
+	}
+
+	var heardChart = newChart("heardChart")
+
+	function stringToColour(s) {
+		// This is nasty
+		// But crypto.subtle.digest is async and we don't need anything that good
+		// https://medium.com/code-nebula/automatically-generate-chart-colors-with-chart-js-d3s-color-scales-f62e282b2b41 looks nice but that's a lot of D3
+
+		function map_range(value, low1, high1, low2, high2) {
+			return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+		}
+
+		function asciiToRGBVal(x) {
+			var y = Math.round(map_range(x, 97, 122, 1, 255)) // lower case only
+			return y
+		}
+		var d = new TextEncoder().encode(s.toLowerCase()) // Lower case for consistent ascii range
+		var colour = `rgba(${asciiToRGBVal(d[0])}, ${asciiToRGBVal(d[1])}, ${asciiToRGBVal(d[2])}, 1)`
+		//console.log(colour)
+		return colour
+	}
+
+	function updateChartOnMessage(client) {
+		client.on("message", function(topic, payload, packet) {
+			var callsign = payload.toString()
+
+			var c = callsign
+			if (heardData.has(c)) {
+				heardData.set(c, heardData.get(c) + 1)
+			} else {
+				heardData.set(c, 1)
+			}
+
+			const truncated = filterDataForTopX(heardData, 100)
+
+			heardChart.data.labels = Array.from(truncated.keys())
+			heardChart.data.datasets.forEach((dataset) => {
+				dataset.data = Array.from(truncated.values())
+				dataset.backgroundColor = heardChart.data.labels.map(function(x) {
+					return stringToColour(x)
+				})
+			})
+		})
+	}
+
+	function filterDataForTopX(data, count) {
+		const entries = [...data.entries()]
+		const sorted = entries.sort((a,b) => b[1] - a[1]) // Sort by value
+		const truncated = sorted.slice(0, count)
+		const filtered = new Map(truncated)
+		return filtered
+	}
+
+	// TODO Duplicated all the connection logic because that embeds the subscribe logic - needs a refactor
+	var client = mqtt.connect(HOST, options)
+	client.on("connect", function () {
+		console.log("Connected")
+		client.subscribe("pskr/heard")
+	})
+
+	updateChartOnMessage(client)
+
+	// Update graph only every second, otherwise yiiiikes message flow
+	const timer = setInterval(() => {
+		heardChart.update()
+	}, 5000)
+</script>
