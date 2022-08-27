@@ -18,11 +18,7 @@ title: Spot Feed
 </table>
 
 <script>
-	const urlParams = new URLSearchParams(window.location.search);
-	var callsign = urlParams.get('callsign');
-	if (!callsign) {
-		callsign = "2E0KGG"
-	}
+	const callsign = handleCallsign()
 
 	var client = connectAndSubscribeAndDoStuff(callsign, updateFeedOnMessage)
 </script>

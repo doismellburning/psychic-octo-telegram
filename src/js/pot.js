@@ -72,3 +72,15 @@ function addEntry(message, target) {
 
 	target.insertBefore(entry, target.firstChild)
 }
+
+function handleCallsign() {
+	const urlParams = new URLSearchParams(window.location.search);
+	const callsign = urlParams.get('callsign');
+	if (!callsign) {
+		callsign = "2E0KGG"
+	}
+
+	console.log(`Callsign: ${callsign}`)
+
+	return callsign
+}

@@ -21,11 +21,7 @@ title: Country Count Charts
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
 <script>
-	const urlParams = new URLSearchParams(window.location.search);
-	var callsign = urlParams.get('callsign');
-	if (!callsign) {
-		callsign = "2E0KGG"
-	}
+	const callsign = handleCallsign()
 
 	var rxData = new Map()
 	var txData = new Map()
