@@ -82,5 +82,7 @@ function handleCallsign() {
 
 	console.log(`Callsign: ${callsign}`)
 
+	document.getElementById("callsign").innerHTML = callsign
+
 	return callsign
 }
