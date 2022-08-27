@@ -75,7 +75,7 @@ function addEntry(message, target) {
 
 function handleCallsign() {
 	const urlParams = new URLSearchParams(window.location.search);
-	const callsign = urlParams.get('callsign');
+	var callsign = urlParams.get('callsign');
 	if (!callsign) {
 		callsign = "2E0KGG"
 	}
