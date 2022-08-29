@@ -27,20 +27,34 @@ title: Heard Map
 		zoom: 1,
 	});
 
+	var payloadByCallsign = new Map()
+	var markersByCallsign = new Map()
+
 	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 	}).addTo(map);
 
 	function updateMapOnMessage(client) {
 		client.on('message', function(topic, payload, packet) {
+			// TODO Fix naming consistency here, argh
 			var message = JSON.parse(payload.toString())
 			console.log(`Payload! ${payload.toString()}`)
 
-			var latLong = maidenheadToLatLong(message["receiverLocator"])
-			
-			var marker = L.marker(latLong).addTo(map)
+			payloadByCallsign.set(message["receiverCallsign"], message)
 		})
 	}
 
 	var client = connectAndSubscribeAndDoStuff(callsign, updateMapOnMessage)
+
+	const timer = setInterval(() => {
+		for (var [callsign, payload] of payloadByCallsign.entries()) {
+			if (markersByCallsign.has(callsign)) {
+				// TODO
+			} else {
+				var latLong = maidenheadToLatLong(payload["receiverLocator"])
+				var marker = L.marker(latLong).addTo(map)
+				markersByCallsign.set(callsign, marker)
+			}
+		}
+	}, 1000)
 </script>
