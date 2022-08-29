@@ -50,6 +50,23 @@ title: Heard Map
 		return `Rx at ${payload["flowStartSeconds"]}<br>From ${payload["senderCallsign"]} by ${payload["receiverCallsign"]} Loc ${payload["receiverLocator"]}`
 	}
 
+	function opacityDecay(timeInSeconds) {
+		// Takes a time in seconds, returns a decayed opacity between 0.1 and 1.0
+		// Floored at 0.1 to ensure markers are always visible
+		// Exponential at first, but maybe something S-shaped would be better?
+		const decayConst = 1 / 1000
+		const initial = 1
+		const duration = (Date.now() / 1000) - timeInSeconds
+
+		var value = initial * Math.E ** (-1 * decayConst * duration)
+
+		if (value < 0.1) {
+			value = 0.1
+		}
+
+		return value
+	}
+
 	const timer = setInterval(() => {
 		for (var [callsign, payload] of payloadByCallsign.entries()) {
 			if (markersByCallsign.has(callsign)) {
@@ -61,6 +78,7 @@ title: Heard Map
 				markersByCallsign.set(callsign, marker)
 				marker.bindTooltip(tooltipStringFromPayload(payload))
 			}
+			marker.setOpacity(opacityDecay(payload["flowStartSeconds"]))
 		}
 	}, 1000)
 </script>
