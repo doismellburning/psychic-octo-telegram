@@ -47,7 +47,7 @@ title: Heard Map
 	var client = connectAndSubscribeAndDoStuff(callsign, updateMapOnMessage)
 
 	function tooltipStringFromPayload(payload) {
-		return `Rx at ${(new Date(payload["flowStartSeconds"] * 1000)).toUTCString()}<br>From ${payload["senderCallsign"]} by ${payload["receiverCallsign"]} Loc ${payload["receiverLocator"]}`
+		return `Rx at ${(new Date(payload["flowStartSeconds"] * 1000)).toUTCString()} (${formatDuration(new Date() - (payload["flowStartSeconds"] * 1000))} ago)<br>From ${payload["senderCallsign"]} by ${payload["receiverCallsign"]} Loc ${payload["receiverLocator"]}`
 	}
 
 	function opacityDecay(timeInSeconds) {
@@ -65,6 +65,22 @@ title: Heard Map
 		}
 
 		return value
+	}
+
+	function formatDuration(ms) {
+		// With thanks to https://www.30secondsofcode.org/js/s/format-duration
+		if (ms < 0) ms = -ms;
+		const time = {
+			day: Math.floor(ms / 86400000),
+			hour: Math.floor(ms / 3600000) % 24,
+			minute: Math.floor(ms / 60000) % 60,
+			second: Math.floor(ms / 1000) % 60,
+			//millisecond: Math.floor(ms) % 1000
+		};
+		return Object.entries(time)
+			.filter(val => val[1] !== 0)
+			.map(([key, val]) => `${val} ${key}${val !== 1 ? 's' : ''}`)
+			.join(', ');
 	}
 
 	const timer = setInterval(() => {
