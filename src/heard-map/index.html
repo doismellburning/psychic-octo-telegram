@@ -47,7 +47,10 @@ title: Heard Map
 	var client = connectAndSubscribeAndDoStuff(callsign, updateMapOnMessage)
 
 	function tooltipStringFromPayload(payload) {
-		return `Rx at ${(new Date(payload["flowStartSeconds"] * 1000)).toUTCString()} (${formatDuration(new Date() - (payload["flowStartSeconds"] * 1000))} ago)<br>From ${payload["senderCallsign"]} by ${payload["receiverCallsign"]} Loc ${payload["receiverLocator"]}`
+		const timeString = (new Date(payload["flowStartSeconds"] * 1000)).toUTCString()
+		const duration = new Date() - (payload["flowStartSeconds"] * 1000)
+
+		return `Rx at ${timeString} (${formatDuration(duration)} ago)<br>From ${payload["senderCallsign"]} by ${payload["receiverCallsign"]} Loc ${payload["receiverLocator"]}`
 	}
 
 	function opacityDecay(timeInSeconds) {
