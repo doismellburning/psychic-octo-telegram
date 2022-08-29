@@ -46,14 +46,20 @@ title: Heard Map
 
 	var client = connectAndSubscribeAndDoStuff(callsign, updateMapOnMessage)
 
+	function tooltipStringFromPayload(payload) {
+		return `Rx at ${payload["flowStartSeconds"]}<br>From ${payload["senderCallsign"]} by ${payload["receiverCallsign"]} Loc ${payload["receiverLocator"]}`
+	}
+
 	const timer = setInterval(() => {
 		for (var [callsign, payload] of payloadByCallsign.entries()) {
 			if (markersByCallsign.has(callsign)) {
-				// TODO
+				var marker = markersByCallsign.get(callsign)
+				marker.setTooltipContent(tooltipStringFromPayload(payload))
 			} else {
 				var latLong = maidenheadToLatLong(payload["receiverLocator"])
 				var marker = L.marker(latLong).addTo(map)
 				markersByCallsign.set(callsign, marker)
+				marker.bindTooltip(tooltipStringFromPayload(payload))
 			}
 		}
 	}, 1000)
